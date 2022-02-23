@@ -30,8 +30,8 @@ function Zip-Runtime
 
 function Install-Osx-Runtime
 {
-    Write-Output "Installing .NET runtime..."
-    & $scriptsRoot/dotnet-install.sh -v $dotnetVersion -i "$runtimeRoot/dotnet" --arch x64 --os osx --no-path
+#    Write-Output "Installing .NET runtime..."
+#    & $scriptsRoot/dotnet-install.sh -v $dotnetVersion -i "$runtimeRoot/dotnet" --arch x64 --os osx --no-path
 
     Write-Output "Installing Node.js runtime..."
     mkdir -p "$runtimeRoot/node"
