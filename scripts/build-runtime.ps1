@@ -20,7 +20,7 @@ function Zip-Runtime
 
     try
     {
-        zip -9 -r "$runtimeId.zip" $runtimeId
+        zip -9 -r -q "$runtimeId.zip" $runtimeId
     }
     finally
     {

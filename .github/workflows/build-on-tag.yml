@@ -1,7 +1,7 @@
 name: Build On Tag
 on: [push]
 jobs:
-  Build-And-Pusblish:
+  Build-And-Publish:
     runs-on: self-hosted
     steps:
       - name: Check out repository code
@@ -11,8 +11,11 @@ jobs:
         run: |
           ${{ github.workspace }}/scripts/build-runtime.ps1 osx
 
-      - name: List build artifacts
-        run: |
-          ls ${{ github.workspace }}/runtimes/*
-
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+      - name: Publish built artifacts
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: true
+          title: "Test Build"
+          files: |
+            ${{ github.workspace }}/runtimes/*.zip
