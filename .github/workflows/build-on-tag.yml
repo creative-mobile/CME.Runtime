@@ -1,5 +1,9 @@
 name: Build On Tag
-on: [push]
+on:
+  push:
+    tags:
+      - "v*"
+
 jobs:
   Build-And-Publish:
     runs-on: self-hosted
@@ -15,8 +19,6 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
           prerelease: true
-          title: "Test Build"
           files: |
             ${{ github.workspace }}/runtimes/*.zip
