@@ -6,14 +6,22 @@ on:
 
 jobs:
   Build-And-Publish:
-    runs-on: self-hosted
+    runs-on: ubuntu-20.04
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
 
+      - name: Prepare Builder
+        run: |
+          ${{ github.workspace }}/scripts/prepare-builder.sh
+
       - name: Build OSX runtime
         run: |
           ${{ github.workspace }}/scripts/build-runtime.ps1 osx
+
+      - name: Build Windows runtime
+        run: |
+          ${{ github.workspace }}/scripts/build-runtime.ps1 win
 
       - name: Publish built artifacts
         uses: "marvinpinto/action-automatic-releases@latest"

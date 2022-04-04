@@ -30,12 +30,24 @@ function Zip-Runtime
 
 function Install-Osx-Runtime
 {
-    Write-Output "Installing .NET runtime..."
+    Write-Output "Installing .NET runtime for OSX..."
     & $scriptsRoot/dotnet-install.sh -v $dotnetVersion -i "$runtimeRoot/dotnet" --arch x64 --os osx --no-path
 
-    Write-Output "Installing Node.js runtime..."
+    Write-Output "Installing Node.js runtime for OSX..."
     mkdir -p "$runtimeRoot/node"
     & $scriptsRoot/install-node.sh --version=$nodejsVersion --platform=darwin --prefix="$runtimeRoot/node" --arch=x64 -f
+}
+
+function Install-Win-Runtime
+{
+    Write-Output "Installing .NET runtime for Windows..."
+    & $scriptsRoot/dotnet-install.ps1 -Version $dotnetVersion -InstallDir "$runtimeRoot/dotnet" -Architecture x64 -NoPath
+
+    Write-Output "Installing Node.js runtime for Windows..."
+    wget -q "https://nodejs.org/download/release/v$nodejsVersion/node-v$nodejsVersion-win-x64.zip"
+    unzip "node-v$nodejsVersion-win-x64.zip" -d "$runtimeRoot"
+
+    mv "$runtimeRoot/node-v$nodejsVersion-win-x64" "$runtimeRoot/node"
 }
 
 function Install-Cdk
@@ -44,9 +56,14 @@ function Install-Cdk
     npm install --no-save --prefix "$runtimeRoot/node" "aws-cdk@$cdkVersion"
 }
 
-if ($runtime = "osx")
+if ($runtime -eq "osx")
 {
     Install-Osx-Runtime
+}
+
+if ($runtime -eq "win")
+{
+    Install-Win-Runtime
 }
 
 Install-Cdk
