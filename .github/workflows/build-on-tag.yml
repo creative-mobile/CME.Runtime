@@ -13,7 +13,7 @@ jobs:
 
       - name: Prepare Builder
         run: |
-          ${{ github.workspace }}/scripts/prepare-builder.sh
+          sudo ${{ github.workspace }}/scripts/prepare-builder.sh
 
       - name: Build OSX runtime
         run: |
