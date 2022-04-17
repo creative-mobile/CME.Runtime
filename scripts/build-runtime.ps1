@@ -44,7 +44,7 @@ function Install-Win-Runtime
     & $scriptsRoot/dotnet-install.ps1 -Version $dotnetVersion -InstallDir "$runtimeRoot/dotnet" -Architecture x64 -NoPath
 
     Write-Output "Installing Node.js runtime for Windows..."
-    wget -q "https://nodejs.org/download/release/v$nodejsVersion/node-v$nodejsVersion-win-x64.zip"
+    curl "https://nodejs.org/download/release/v$nodejsVersion/node-v$nodejsVersion-win-x64.zip" --output "node-v$nodejsVersion-win-x64.zip"
     unzip "node-v$nodejsVersion-win-x64.zip" -d "$runtimeRoot"
 
     mv "$runtimeRoot/node-v$nodejsVersion-win-x64" "$runtimeRoot/node"
