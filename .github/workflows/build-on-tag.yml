@@ -1,8 +1,8 @@
 name: Build On Tag
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - '*'
 
 jobs:
   create_release:
@@ -61,3 +61,4 @@ jobs:
         with:
           upload_url: ${{needs.create_release.outputs.release_url}}
           asset_path: ${{ github.workspace }}/runtimes/games.cm.cme.runtime.*.*
+          asset_name: games.cm.cme.runtime.*.*
