@@ -1,8 +1,8 @@
 name: Build On Tag
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
 
 jobs:
   Build-And-Publish-Windows:
@@ -20,7 +20,15 @@ jobs:
         shell: pwsh
         run: |
           ${{ github.workspace }}/scripts/build-runtime.ps1 win
-          
+
+      - name: Publish built artifacts
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: true
+          files: |
+            ${{ github.workspace }}/runtimes/*.zip
+            ${{ github.workspace }}/runtimes/*.sha256
 
   Build-And-Publish-MacOSX:
     runs-on: ubuntu-20.04
@@ -36,10 +44,11 @@ jobs:
         run: |
           ${{ github.workspace }}/scripts/build-runtime.ps1 osx
 
-#      - name: Publish built artifacts
-#        uses: "marvinpinto/action-automatic-releases@latest"
-#        with:
-#          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-#          prerelease: true
-#          files: |
-#            ${{ github.workspace }}/runtimes/*.zip
+      - name: Publish built artifacts
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: true
+          files: |
+            ${{ github.workspace }}/runtimes/*.zip
+            ${{ github.workspace }}/runtimes/*.sha256

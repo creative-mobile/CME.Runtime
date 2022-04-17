@@ -21,6 +21,7 @@ function Zip-Runtime
     try
     {
         zip -9 -r -q "$runtimeId.zip" $runtimeId
+        (Get-FileHash "$runtimeId.zip" -Algorithm SHA256).Hash > "$runtimeId.sha256"
     }
     finally
     {
