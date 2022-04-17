@@ -2,7 +2,7 @@ name: Build On Tag
 on:
   push:
     tags:
-      - '*'
+      - 'v*'
 
 jobs:
   create_release:
@@ -26,32 +26,26 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
+        include:
+          - os: ubuntu-latest
+            target_os: osx
+          - os: ubuntu-latest
+            target_os: win
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
 
-      - name: Prepare Builder on Windows
-        if: matrix.os == 'windows-latest'
+      - name: Prepare Builder
         shell: pwsh
         run: |
-          choco install -y nodejs zip curl
+          ${{ github.workspace }}/scripts/prepare-builder.ps1 ${{ matrix.target_os }}
+          
 
-      - name: Prepare Builder on MacOSX
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get install -y npm zip curl
-
-      - name: Build Windows runtime
-        if: matrix.os == 'windows-latest'
+      - name: Build Runtime
         shell: pwsh
         run: |
-          ${{ github.workspace }}/scripts/build-runtime.ps1 win
-
-      - name: Build OSX runtime
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          ${{ github.workspace }}/scripts/build-runtime.ps1 osx  
+          ${{ github.workspace }}/scripts/build-runtime.ps1 ${{ matrix.target_os }}
 
       - name: Upload Release Archive
         id: upload-release-assets
