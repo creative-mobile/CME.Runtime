@@ -1,32 +1,44 @@
 name: Build On Tag
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - main
 
 jobs:
-  Build-And-Publish:
-    runs-on: ubuntu-20.04
+  Build-And-Publish-Windows:
+    runs-on: windows-2022
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
 
       - name: Prepare Builder
+        shell: pwsh
         run: |
-          sudo ${{ github.workspace }}/scripts/prepare-builder.sh
+          choco install curl -y
+          choco install nodejs -y
 
-      - name: Build OSX runtime
-        run: |
-          ${{ github.workspace }}/scripts/build-runtime.ps1 osx
-
-      - name: Build Windows runtime
-        run: |
-          ${{ github.workspace }}/scripts/build-runtime.ps1 win
-
-      - name: Publish built artifacts
-        uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: true
-          files: |
-            ${{ github.workspace }}/runtimes/*.zip
+#  Build-And-Publish-MacOSX:
+#    runs-on: ubuntu-20.04
+#    steps:
+#      - name: Check out repository code
+#        uses: actions/checkout@v2
+#
+#      - name: Prepare Builder
+#        run: |
+#          sudo ${{ github.workspace }}/scripts/prepare-builder.sh
+#
+#      - name: Build OSX runtime
+#        run: |
+#          ${{ github.workspace }}/scripts/build-runtime.ps1 osx
+#
+#      - name: Build Windows runtime
+#        run: |
+#          ${{ github.workspace }}/scripts/build-runtime.ps1 win
+#
+#      - name: Publish built artifacts
+#        uses: "marvinpinto/action-automatic-releases@latest"
+#        with:
+#          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+#          prerelease: true
+#          files: |
+#            ${{ github.workspace }}/runtimes/*.zip
