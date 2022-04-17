@@ -1,4 +1,4 @@
-name: Build On Tag
+name: Build New Version
 on:
   push:
     tags:
@@ -29,7 +29,7 @@ jobs:
         include:
           - os: ubuntu-latest
             target_os: osx
-          - os: ubuntu-latest
+          - os: windows-latest
             target_os: win
 
     steps:
