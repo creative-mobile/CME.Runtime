@@ -14,18 +14,18 @@ jobs:
       - name: Prepare Builder
         shell: pwsh
         run: |
-          choco install curl -y
-          choco install nodejs -y
+          choco install -y npm zip curl
+          
 
-#  Build-And-Publish-MacOSX:
-#    runs-on: ubuntu-20.04
-#    steps:
-#      - name: Check out repository code
-#        uses: actions/checkout@v2
-#
-#      - name: Prepare Builder
-#        run: |
-#          sudo ${{ github.workspace }}/scripts/prepare-builder.sh
+  Build-And-Publish-MacOSX:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Prepare Builder
+        run: |
+          apt-get install -y npm zip curl
 #
 #      - name: Build OSX runtime
 #        run: |
