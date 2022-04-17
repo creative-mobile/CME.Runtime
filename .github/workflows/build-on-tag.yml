@@ -1,14 +1,14 @@
 name: Build On Tag
 on:
   push:
-    branches:
+    tags:
       - '*'
 
 jobs:
   create_release:
     runs-on: ubuntu-20.04
     outputs:
-      release_url: ${{ steps.create_release.outputs.upload_url }}
+      release_id: ${{ steps.create_release.outputs.id }}
     steps:
     - name: Create Release
       id: create_release
@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Prepare Builder on Windows
-        if: matrix.os == 'ubuntu-windows'
+        if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
           choco install -y nodejs zip curl
@@ -43,7 +43,7 @@ jobs:
           sudo apt-get install -y npm zip curl
 
       - name: Build Windows runtime
-        if: matrix.os == 'ubuntu-windows'
+        if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
           ${{ github.workspace }}/scripts/build-runtime.ps1 win
@@ -53,26 +53,11 @@ jobs:
         run: |
           ${{ github.workspace }}/scripts/build-runtime.ps1 osx  
 
-      - name: Upload OSX Release Archive
-        if: matrix.os == 'ubuntu-latest'
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
+      - name: Upload Release Archive
+        id: upload-release-assets
+        uses: dwenegar/upload-release-assets@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{needs.create_release.outputs.release_url}}
-          asset_path: ${{ github.workspace }}/runtimes/games.cm.cme.runtime.osx.zip
-          asset_name: games.cm.cme.runtime.osx.zip
-          asset_content_type: application/zip
-
-      - name: Upload Windows Release Archive
-        if: matrix.os == 'windows-latest'
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{needs.create_release.outputs.release_url}}
-          asset_path: ${{ github.workspace }}/runtimes/games.cm.cme.runtime.win.zip
-          asset_name: games.cm.cme.runtime.win.zip
-          asset_content_type: application/zip
+          release_id: ${{needs.create_release.outputs.release_id}}
+          assets_path: ${{ github.workspace }}/runtimes
