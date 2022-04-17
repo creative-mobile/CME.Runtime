@@ -53,12 +53,26 @@ jobs:
         run: |
           ${{ github.workspace }}/scripts/build-runtime.ps1 osx  
 
-      - name: Upload Release Archive
+      - name: Upload OSX Release Archive
+        if: matrix.os == 'ubuntu-latest'
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{needs.create_release.outputs.release_url}}
-          asset_path: ${{ github.workspace }}/runtimes/games.cm.cme.runtime.*.*
-          asset_name: games.cm.cme.runtime.*.*
+          asset_path: ${{ github.workspace }}/runtimes/games.cm.cme.runtime.osx.zip
+          asset_name: games.cm.cme.runtime.osx.zip
+          asset_content_type: application/zip
+
+      - name: Upload Windows Release Archive
+        if: matrix.os == 'windows-latest'
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{needs.create_release.outputs.release_url}}
+          asset_path: ${{ github.workspace }}/runtimes/games.cm.cme.runtime.win.zip
+          asset_name: games.cm.cme.runtime.win.zip
+          asset_content_type: application/zip
