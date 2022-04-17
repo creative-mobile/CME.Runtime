@@ -21,7 +21,7 @@ jobs:
         draft: false
         prerelease: false
 
-  build_on_os:
+  build_and_publish:
     needs: [create_release]
     runs-on: ${{ matrix.os }}
     strategy:
