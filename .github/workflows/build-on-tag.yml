@@ -5,8 +5,25 @@ on:
       - "v*"
 
 jobs:
-  Build-And-Publish-Windows:
+  create_release:
+    runs-on: ubuntu-20.04
+    outputs:
+      release_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+  build_on_windows:
     runs-on: windows-2022
+    needs: [create_release]
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
@@ -21,17 +38,31 @@ jobs:
         run: |
           ${{ github.workspace }}/scripts/build-runtime.ps1 win
 
-      - name: Publish built artifacts
-        uses: "marvinpinto/action-automatic-releases@latest"
+      - name: Upload Release Archive
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: true
-          files: |
-            ${{ github.workspace }}/runtimes/*.zip
-            ${{ github.workspace }}/runtimes/*.sha256
+          upload_url: ${{needs.create_release.outputs.release_url}}
+          asset_path: ${{ github.workspace }}/runtimes/games.cm.cme.runtime.win.zip
+          asset_name: games.cm.cme.runtime.win.zip
+          asset_content_type: application/zip
 
-  Build-And-Publish-MacOSX:
+      - name: Upload Release Checksum
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{needs.create_release.outputs.release_url}}
+          asset_path: ${{ github.workspace }}/runtimes/games.cm.cme.runtime.win.sha256
+          asset_name: games.cm.cme.runtime.win.sha256
+          asset_content_type: text/plain
+
+  build_on_macosx:
     runs-on: ubuntu-20.04
+    needs: [create_release]
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
@@ -44,11 +75,24 @@ jobs:
         run: |
           ${{ github.workspace }}/scripts/build-runtime.ps1 osx
 
-      - name: Publish built artifacts
-        uses: "marvinpinto/action-automatic-releases@latest"
+      - name: Upload Release Archive
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: true
-          files: |
-            ${{ github.workspace }}/runtimes/*.zip
-            ${{ github.workspace }}/runtimes/*.sha256
+          upload_url: ${{needs.create_release.outputs.release_url}}
+          asset_path: ${{ github.workspace }}/runtimes/games.cm.cme.runtime.osx.zip
+          asset_name: games.cm.cme.runtime.osx.zip
+          asset_content_type: application/zip
+
+      - name: Upload Release Checksum
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{needs.create_release.outputs.release_url}}
+          asset_path: ${{ github.workspace }}/runtimes/games.cm.cme.runtime.osx.sha256
+          asset_name: games.cm.cme.runtime.osx.sha256
+          asset_content_type: text/plain
